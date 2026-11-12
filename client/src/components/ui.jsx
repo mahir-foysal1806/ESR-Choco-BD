@@ -10,7 +10,13 @@ const PLACEHOLDER = {
   'agricultural-products': { emoji: '🌾', cls: 'from-earth-100 to-leaf-200' },
 };
 
-export function ProductImage({ src, alt, category, className = '' }) {
+export function ProductImage({
+  src,
+  alt,
+  category,
+  className = '',
+  priority = false,
+}) {
   const [failed, setFailed] = useState(false);
   const ph = PLACEHOLDER[category] || PLACEHOLDER['agricultural-products'];
   if (!src || failed)
@@ -19,7 +25,17 @@ export function ProductImage({ src, alt, category, className = '' }) {
         <span className="text-5xl drop-shadow-sm sm:text-6xl">{ph.emoji}</span>
       </div>
     );
-  return <img src={assetUrl(src)} alt={alt} loading="lazy" onError={() => setFailed(true)} className={`object-cover ${className}`} />;
+  return (
+    <img
+      src={assetUrl(src)}
+      alt={alt}
+      loading={priority ? 'eager' : 'lazy'}
+      fetchPriority={priority ? 'high' : 'auto'}
+      decoding="async"
+      onError={() => setFailed(true)}
+      className={`object-cover ${className}`}
+    />
+  );
 }
 
 export function Stars({ value = 0, count, size = 14 }) {

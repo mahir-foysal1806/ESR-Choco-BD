@@ -20,7 +20,16 @@ function HeroBanner() {
   const banners = (settings.banners || []).filter((b) => b.active !== false);
   const [i, setI] = useState(0);
   useInterval(() => banners.length > 1 && setI((x) => (x + 1) % banners.length), 6000);
-  if (!banners.length) return <Skeleton className="m-4 h-56 sm:h-80" />;
+  if (!banners.length) {
+    return (
+      <section className="container-x pt-4">
+        <div
+          aria-hidden="true"
+          className="min-h-[15rem] animate-pulse rounded-3xl bg-earth-100 shadow-lift sm:min-h-[22rem]"
+        />
+      </section>
+    );
+  }
   const b = banners[i % banners.length];
   const dark = !(b.theme === 'honey' || b.theme === 'mango') || b.image;
 
@@ -29,7 +38,14 @@ function HeroBanner() {
       <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-br ${THEMES[b.theme] || THEMES.leaf} shadow-lift`}>
         {b.image && (
           <>
-            <img src={assetUrl(b.image)} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            <img
+              src={assetUrl(b.image)}
+              alt=""
+              loading="eager"
+              fetchPriority={i === 0 ? 'high' : 'auto'}
+              decoding="async"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-transparent" />
           </>
         )}
@@ -109,6 +125,7 @@ function TrustStrip() {
 
 function FacebookSection() {
   const { settings } = useSettings();
+  const [showFeed, setShowFeed] = useState(false);
   const { social, facebookReviews, brand } = settings;
   const page = social.facebookPageUrl;
   if (!page && !facebookReviews.length) return null;
@@ -151,7 +168,34 @@ function FacebookSection() {
           {plugin && (
             <div className="lg:col-span-2">
               <div className="overflow-hidden rounded-2xl bg-white">
-                <iframe title="Facebook Page feed" src={plugin} width="100%" height="480" style={{ border: 'none', overflow: 'hidden' }} loading="lazy" allow="encrypted-media" />
+                {showFeed ? (
+                  <iframe
+                    title="Facebook Page feed"
+                    src={plugin}
+                    width="100%"
+                    height="480"
+                    style={{ border: 'none', overflow: 'hidden' }}
+                    loading="lazy"
+                    allow="encrypted-media"
+                  />
+                ) : (
+                  <div className="flex min-h-[480px] flex-col items-center justify-center gap-4 p-6 text-center">
+                    <Facebook size={42} className="text-[#1877F2]" />
+                    <p className="font-semibold text-earth-900">
+                      View our Facebook Page
+                    </p>
+                    <p className="text-sm text-earth-600">
+                      Load the Facebook feed when you want to see it.
+                    </p>
+                    <button
+                      type="button"
+                      className="btn bg-[#1877F2] text-white hover:bg-[#1665cc]"
+                      onClick={() => setShowFeed(true)}
+                    >
+                      Load Facebook Feed
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           )}

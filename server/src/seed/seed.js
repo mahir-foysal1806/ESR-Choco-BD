@@ -92,9 +92,13 @@ async function seedProducts(categoryMap) {
 }
 
 async function seedAdmin() {
-  const email = (process.env.ADMIN_EMAIL || 'admin@cocoacrunch.com')
+  const email = String(process.env.ADMIN_EMAIL || '')
     .trim()
     .toLowerCase();
+
+  if (!email) {
+    throw new Error('ADMIN_EMAIL must be configured before creating an admin.');
+  }
 
   const password = process.env.ADMIN_PASSWORD;
   const name = process.env.ADMIN_NAME || 'Owner';

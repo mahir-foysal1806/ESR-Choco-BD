@@ -1,5 +1,5 @@
 import { NavLink, Navigate, Outlet, Link } from 'react-router-dom';
-import { LayoutDashboard, Package, ClipboardList, MessageSquareText, Settings, LogOut, ExternalLink, Leaf, Loader2 } from 'lucide-react';
+import { LayoutDashboard, Package, ClipboardList, MessageSquareText, Settings, LogOut, ExternalLink, Loader2 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../context/AuthContext';
 
@@ -23,7 +23,9 @@ export default function AdminLayout() {
     <div className="min-h-screen bg-earth-50">
       <Helmet><meta name="robots" content="noindex,nofollow" /><title>Admin — ESR Choco BD</title></Helmet>
       <aside className="fixed inset-y-0 left-0 hidden w-60 flex-col border-r border-earth-100 bg-white p-4 lg:flex">
-        <Link to="/admin" className="mb-6 flex items-center gap-2"><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-leaf-600 text-white"><Leaf size={20} /></span><span className="font-display text-lg font-bold text-leaf-800">ESR Choco BD · Admin</span></Link>
+        <Link to="/admin" aria-label="ESR Choco BD Admin" className="mb-6 flex items-center">
+          <img src="/esr-choco-bd-logo.png" alt="ESR Choco BD" className="h-12 w-auto max-w-[190px] object-contain object-left" width="300" height="200" />
+        </Link>
         <nav className="space-y-1">{NAV.map(([to, label, Icon, end]) => <NavLink key={to} to={to} end={end} className={item}><Icon size={18} />{label}</NavLink>)}</nav>
         <div className="mt-auto space-y-2 border-t border-earth-100 pt-4">
           <Link to="/" target="_blank" className="btn-ghost w-full justify-start"><ExternalLink size={16} /> View store</Link>
@@ -33,7 +35,9 @@ export default function AdminLayout() {
       </aside>
 
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-earth-100 bg-white px-4 py-3 lg:hidden">
-        <span className="font-display font-bold text-leaf-800">ESR Choco BD · Admin</span>
+        <Link to="/admin" aria-label="ESR Choco BD Admin" className="flex items-center">
+          <img src="/esr-choco-bd-logo.png" alt="ESR Choco BD" className="h-10 w-auto max-w-[160px] object-contain object-left" width="300" height="200" />
+        </Link>
         <div className="flex gap-1"><Link to="/" target="_blank" className="btn-ghost !p-2" aria-label="View store"><ExternalLink size={18} /></Link><button onClick={logout} className="btn-ghost !p-2 text-red-600" aria-label="Log out"><LogOut size={18} /></button></div>
       </header>
 

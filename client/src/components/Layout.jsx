@@ -31,19 +31,16 @@ function AnnouncementBar() {
 function Logo() {
   const { settings } = useSettings();
   const b = settings.brand;
+
   return (
-    <Link to="/" className="flex items-center gap-2">
-      {b.logo ? (
-        <img src={assetUrl(b.logo)} alt={b.name} className="h-9 w-9 rounded-lg object-cover" />
-      ) : (
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-leaf-600 text-white shadow-soft">
-          <Leaf size={20} />
-        </span>
-      )}
-      <span className="leading-none">
-        <span className="block font-display text-xl font-bold text-leaf-800">{b.name}</span>
-        {b.nameBn && <span className="block text-[11px] font-medium text-honey-600">{b.nameBn}</span>}
-      </span>
+    <Link to="/" aria-label="ESR Choco BD Home" className="flex shrink-0 items-center">
+      <img
+        src={b.logo ? assetUrl(b.logo) : "/esr-choco-bd-logo.png"}
+        alt="ESR Choco BD — Premium Chocolates, Nuts & Dates"
+        className="h-11 w-auto max-w-[170px] object-contain sm:h-12 sm:max-w-[200px]"
+        width="300"
+        height="200"
+      />
     </Link>
   );
 }
@@ -165,7 +162,13 @@ function Footer() {
 
       <div className="container-x grid gap-8 py-10 md:grid-cols-2 lg:grid-cols-4">
         <div>
-          <p className="font-display text-2xl font-bold text-white">{brand.name}</p>
+          <img
+  src={brand.logo ? assetUrl(brand.logo) : "/esr-choco-bd-logo.png"}
+  alt="ESR Choco BD"
+  className="h-14 w-auto max-w-[210px] object-contain object-left"
+  width="300"
+  height="200"
+/>
           {brand.nameBn && <p className="text-sm text-honey-300">{brand.nameBn}</p>}
           <p className="mt-3 text-sm leading-relaxed text-leaf-200">{about.body}</p>
           {social.facebookPageUrl && (

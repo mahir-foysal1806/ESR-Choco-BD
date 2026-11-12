@@ -29,7 +29,7 @@ export const DEFAULT_SETTINGS = {
     phones: ['01700-000000'],
     whatsapp: '8801700000000', // international format, no +
     messengerUsername: 'yourpage', // m.me/<username>
-    email: 'hello@cocoacrunch.com',
+    email: '',
     address: 'House 12, Road 5, Mirpur-10, Dhaka-1216, Bangladesh',
     mapUrl: 'https://maps.google.com/?q=Mirpur+10+Dhaka',
     hours: 'Saturday – Thursday: 9:00 AM – 9:00 PM',

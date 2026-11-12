@@ -225,6 +225,13 @@ export default function Home() {
         </section>
       )}
 
+      {data?.featured?.length > 0 && (
+        <section className="container-x pt-10">
+          <SectionHeader icon={Sparkles} eyebrow="Handpicked for you" title="Featured Products" subtitle="Explore our highlighted chocolate, coffee and gift collections." to="/shop?featured=featured" />
+          <ProductGrid items={data.featured.slice(0, 8)} />
+        </section>
+      )}
+
       {data?.offers?.length > 0 && (
         <section className="container-x pt-8">
           <div className="rounded-3xl bg-gradient-to-br from-honey-100 to-honey-50 p-4 ring-1 ring-honey-200 sm:p-8">
@@ -251,7 +258,7 @@ export default function Home() {
       {data?.popular?.length > 0 && (
         <section className="container-x pt-12">
           <SectionHeader icon={TrendingUp} eyebrow="Customer favourites" title="Best Sellers" to="/shop?sort=popular" />
-          <ProductGrid items={data.popular.slice(0, 8)} />
+          <ProductGrid items={(data.bestSellers?.length ? data.bestSellers : data.popular).slice(0, 8)} />
         </section>
       )}
 

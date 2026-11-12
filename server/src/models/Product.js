@@ -6,6 +6,14 @@ const productSchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
     nameBn: { type: String, trim: true },
+    brand: { type: String, trim: true },
+    sku: { type: String, trim: true, uppercase: true },
+    flavor: { type: String, trim: true },
+    ingredients: { type: String, trim: true },
+    netWeight: { type: String, trim: true },
+    packagingType: { type: String, trim: true },
+    expiryDate: { type: Date },
+    storageInstructions: { type: String, trim: true },
     slug: { type: String, unique: true, index: true },
     category: { type: Schema.Types.ObjectId, ref: 'Category', required: true, index: true },
     shortDescription: { type: String, trim: true, maxlength: 220 },
@@ -35,6 +43,9 @@ const productSchema = new Schema(
 
     // ---- Homepage daily showcase ----
     isTodaysFresh: { type: Boolean, default: false, index: true },
+    isBestSeller: { type: Boolean, default: false, index: true },
+    isNewArrival: { type: Boolean, default: false, index: true },
+    isFeatured: { type: Boolean, default: false, index: true },
     isTodaysOffer: { type: Boolean, default: false, index: true },
     offerNote: { type: String, trim: true },
 

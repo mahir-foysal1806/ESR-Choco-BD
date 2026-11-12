@@ -17,6 +17,7 @@ const AdminLayout = lazy(() => import('./admin/AdminLayout.jsx'));
 const AdminLogin = lazy(() => import('./admin/AdminLogin.jsx'));
 const Dashboard = lazy(() => import('./admin/Dashboard.jsx'));
 const AdminProducts = lazy(() => import('./admin/AdminProducts.jsx'));
+const AdminCategories = lazy(() => import('./admin/AdminCategories.jsx'));
 const AdminOrders = lazy(() => import('./admin/AdminOrders.jsx'));
 const AdminReviews = lazy(() => import('./admin/AdminReviews.jsx'));
 const AdminSettings = lazy(() => import('./admin/AdminSettings.jsx'));
@@ -60,6 +61,7 @@ export default function App() {
           <Route path="admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="products" element={<AdminProducts />} />
+            <Route path="categories" element={<AdminCategories />} />
             <Route path="orders" element={<AdminOrders />} />
             <Route path="reviews" element={<AdminReviews />} />
             <Route path="settings" element={<AdminSettings />} />

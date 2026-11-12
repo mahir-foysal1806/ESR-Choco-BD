@@ -36,6 +36,7 @@ export default function ProductCard({ p }) {
           {p.name}
         </Link>
         {p.nameBn && <p className="line-clamp-1 text-xs text-earth-500">{p.nameBn}</p>}
+        {p.brand && <p className="mt-1 line-clamp-1 text-[11px] font-medium uppercase tracking-wide text-earth-500">{p.brand}</p>}
         <div className="mt-1">
           <Stars value={p.ratingAvg} count={p.ratingCount} />
         </div>

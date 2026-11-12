@@ -54,7 +54,7 @@ export default function Shop() {
   }, [query, page]);
 
   const activeCat = categories.find((c) => c.slug === query.category);
-  const title = query.featured === 'fresh' ? "Today's Fresh Arrivals" : query.featured === 'offer' ? "Today's Offers" : query.seasonal ? 'Seasonal Specials' : activeCat?.name || 'All Products';
+  const title = query.featured === 'fresh' ? 'New Arrivals' : query.featured === 'offer' ? "Today's Offers" : query.featured === 'featured' ? 'Featured Products' : query.featured === 'best-seller' ? 'Best Sellers' : query.seasonal ? 'Seasonal Specials' : activeCat?.name || 'All Products';
   const hasFilters = query.minPrice || query.maxPrice || query.availability || query.seasonal || query.featured;
 
   const Filters = (

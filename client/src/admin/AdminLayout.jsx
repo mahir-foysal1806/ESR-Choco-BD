@@ -1,11 +1,12 @@
 import { NavLink, Navigate, Outlet, Link } from 'react-router-dom';
-import { LayoutDashboard, Package, ClipboardList, MessageSquareText, Settings, LogOut, ExternalLink, Loader2 } from 'lucide-react';
+import { LayoutDashboard, Package, Tags, ClipboardList, MessageSquareText, Settings, LogOut, ExternalLink, Loader2 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../context/AuthContext';
 
 const NAV = [
   ['/admin', 'Dashboard', LayoutDashboard, true],
   ['/admin/products', 'Products', Package],
+  ['/admin/categories', 'Categories', Tags],
   ['/admin/orders', 'Orders', ClipboardList],
   ['/admin/reviews', 'Reviews', MessageSquareText],
   ['/admin/settings', 'Site Settings', Settings],

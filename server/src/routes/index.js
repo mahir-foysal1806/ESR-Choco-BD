@@ -30,6 +30,7 @@ r.get('/admin/settings', protect, settings.getAdminSettings);
 r.put('/admin/settings', protect, requireRole('admin'), settings.updateSettings);
 
 // Categories
+r.get('/admin/categories', protect, requireRole('admin'), cat.adminListCategories);
 r.get('/categories', cat.listCategories);
 r.post('/categories', protect, requireRole('admin'), cat.createCategory);
 r.put('/categories/:id', protect, requireRole('admin'), cat.updateCategory);

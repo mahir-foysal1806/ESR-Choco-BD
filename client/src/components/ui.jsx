@@ -59,18 +59,17 @@ export function AvailabilityChip({ value }) {
 // Trust + dynamic badges. Limited/Pre-order tags come from inventory counts automatically.
 export function ProductBadges({ p, compact = false }) {
   const b = [];
-  if (p.isOrganic) b.push(['Organic', 'bg-leaf-600 text-white']);
-  if (p.isPure) b.push(['100% Pure', 'bg-honey-400 text-earth-900']);
-  if (p.isSeasonal && p.seasonAvailable) b.push(['Seasonal', 'bg-orange-500 text-white']);
+  if (p.isBestSeller) b.push(['Best Seller', 'bg-honey-400 text-earth-900']);
+  if (p.isNewArrival) b.push(['New Arrival', 'bg-sky-600 text-white']);
+  if (p.isTodaysOffer) b.push(['Special Offer', 'bg-red-600 text-white']);
+  if (p.isFeatured) b.push(['Featured', 'bg-leaf-600 text-white']);
   if (p.availability === 'limited') b.push([`Only ${p.stockQty} left`, 'bg-red-600 text-white']);
   if (p.availability === 'preorder') b.push(['Pre-Order', 'bg-sky-600 text-white']);
-  if (p.isTodaysFresh) b.push(['Fresh Today', 'bg-white text-leaf-700 ring-1 ring-leaf-200']);
+
   return (
     <div className="flex flex-wrap gap-1">
       {(compact ? b.slice(0, 2) : b).map(([t, c]) => (
-        <span key={t} className={`chip shadow-sm ${c}`}>
-          {t}
-        </span>
+        <span key={t} className={`chip shadow-sm ${c}`}>{t}</span>
       ))}
     </div>
   );

@@ -40,8 +40,12 @@ export const listProducts = asyncHandler(async (req, res) => {
     filter.stockQty = { $gt: 0 };
     and.push({ $or: seasonOk });
   }
-  if (featured === 'fresh') filter.isTodaysFresh = true;
+  if (featured === 'fresh') {
+    and.push({ $or: [{ isNewArrival: true }, { isTodaysFresh: true }] });
+  }
   if (featured === 'offer') filter.isTodaysOffer = true;
+  if (featured === 'featured') filter.isFeatured = true;
+  if (featured === 'best-seller') filter.isBestSeller = true;
   if (seasonal === 'true') {
     filter.isSeasonal = true;
     filter.seasonAvailable = true;
@@ -67,13 +71,32 @@ export const listProducts = asyncHandler(async (req, res) => {
 export const homeProducts = asyncHandler(async (_req, res) => {
   const base = { isActive: true };
   const pop = (q) => q.populate('category', 'name nameBn slug icon');
-  const [fresh, offers, seasonal, popular] = await Promise.all([
-    pop(Product.find({ ...base, isTodaysFresh: true }).sort('-updatedAt').limit(12)),
+
+  const [fresh, offers, seasonal, popular, featured, bestSellers] = await Promise.all([
+    pop(Product.find({
+      ...base,
+      $or: [{ isNewArrival: true }, { isTodaysFresh: true }]
+    }).sort('-updatedAt').limit(12)),
+
     pop(Product.find({ ...base, isTodaysOffer: true }).sort('-updatedAt').limit(12)),
-    pop(Product.find({ ...base, isSeasonal: true, seasonAvailable: true }).sort('-soldCount').limit(8)),
-    pop(Product.find({ ...base, $or: seasonOk }).sort({ soldCount: -1, ratingAvg: -1 }).limit(8)),
+
+    pop(Product.find({
+      ...base,
+      isSeasonal: true,
+      seasonAvailable: true
+    }).sort('-soldCount').limit(8)),
+
+    pop(Product.find({ ...base, $or: seasonOk })
+      .sort({ soldCount: -1, ratingAvg: -1 }).limit(8)),
+
+    pop(Product.find({ ...base, isFeatured: true })
+      .sort({ sortOrder: 1, updatedAt: -1 }).limit(8)),
+
+    pop(Product.find({ ...base, isBestSeller: true })
+      .sort({ soldCount: -1, ratingAvg: -1 }).limit(8)),
   ]);
-  res.json({ fresh, offers, seasonal, popular });
+
+  res.json({ fresh, offers, seasonal, popular, featured, bestSellers });
 });
 
 export const getProduct = asyncHandler(async (req, res) => {
@@ -110,7 +133,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
 });
 
 // Fast daily edits from the inventory table (price / stock / toggles)
-const QUICK_FIELDS = ['price', 'comparePrice', 'stockQty', 'stockStatus', 'isTodaysFresh', 'isTodaysOffer', 'seasonAvailable', 'isActive', 'allowPreOrder'];
+const QUICK_FIELDS = ['price', 'comparePrice', 'stockQty', 'stockStatus', 'isTodaysFresh', 'isTodaysOffer', 'isBestSeller', 'isNewArrival', 'isFeatured', 'seasonAvailable', 'isActive', 'allowPreOrder'];
 export const quickUpdateProduct = asyncHandler(async (req, res) => {
   const patch = {};
   for (const k of QUICK_FIELDS) if (req.body[k] !== undefined) patch[k] = req.body[k];

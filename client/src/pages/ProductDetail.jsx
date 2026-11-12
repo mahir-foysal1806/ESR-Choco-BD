@@ -107,6 +107,7 @@ export default function ProductDetail() {
         <div>
           <h1 className="text-2xl font-bold leading-tight text-leaf-900 sm:text-3xl">{p.name}</h1>
           {p.nameBn && <p className="text-earth-600">{p.nameBn}</p>}
+          {p.brand && <p className="mt-1 text-sm font-semibold uppercase tracking-wide text-leaf-700">{p.brand}</p>}
           <div className="mt-2 flex flex-wrap items-center gap-3"><Stars value={p.ratingAvg} count={p.ratingCount} size={16} /><AvailabilityChip value={p.availability} />{p.origin && <span className="flex items-center gap-1 text-xs text-earth-500"><MapPin size={12} /> {p.origin}</span>}</div>
 
           <div className="mt-4 flex items-baseline gap-2">
@@ -116,6 +117,14 @@ export default function ProductDetail() {
           </div>
           {p.isTodaysOffer && p.offerNote && <p className="mt-2 inline-block rounded-lg bg-red-50 px-3 py-1 text-sm font-semibold text-red-700">🔥 {p.offerNote}</p>}
           {p.shortDescription && <p className="mt-4 text-earth-700">{p.shortDescription}</p>}
+          {(p.sku || p.flavor || p.netWeight || p.packagingType) && (
+            <div className="mt-4 grid grid-cols-2 gap-2 rounded-xl bg-earth-50 p-3 text-sm">
+              {p.sku && <div><span className="text-earth-500">Product code</span><p className="font-semibold text-earth-800">{p.sku}</p></div>}
+              {p.flavor && <div><span className="text-earth-500">Flavor / Variant</span><p className="font-semibold text-earth-800">{p.flavor}</p></div>}
+              {p.netWeight && <div><span className="text-earth-500">Net weight</span><p className="font-semibold text-earth-800">{p.netWeight}</p></div>}
+              {p.packagingType && <div><span className="text-earth-500">Packaging</span><p className="font-semibold text-earth-800">{p.packagingType}</p></div>}
+            </div>
+          )}
           {p.isSeasonal && p.seasonLabel && <p className="mt-2 text-sm text-orange-700">🌿 Season: {p.seasonLabel}</p>}
           {p.availability === 'limited' && <p className="mt-2 text-sm font-semibold text-red-600">Hurry — only {p.stockQty} {p.unit} left!</p>}
           {pre && <p className="mt-2 rounded-lg bg-sky-50 p-3 text-sm text-sky-800">This item is available for pre-order. We'll confirm delivery timing by phone once your order is placed.</p>}
@@ -154,7 +163,14 @@ export default function ProductDetail() {
           ))}
         </div>
         <div className="py-5">
-          {tab === 'desc' ? <div className="max-w-3xl whitespace-pre-line leading-relaxed text-earth-700">{p.description || p.shortDescription || 'No description yet.'}</div> : <Reviews product={p} />}
+          {tab === 'desc' ? (
+            <div className="max-w-3xl space-y-4">
+              <div className="whitespace-pre-line leading-relaxed text-earth-700">{p.description || p.shortDescription || 'No description yet.'}</div>
+              {p.ingredients && <div><h3 className="mb-1 font-semibold text-earth-900">Ingredients</h3><p className="whitespace-pre-line text-sm leading-relaxed text-earth-700">{p.ingredients}</p></div>}
+              {p.storageInstructions && <div><h3 className="mb-1 font-semibold text-earth-900">Storage instructions</h3><p className="text-sm text-earth-700">{p.storageInstructions}</p></div>}
+              {p.expiryDate && <div><h3 className="mb-1 font-semibold text-earth-900">Expiry date</h3><p className="text-sm text-earth-700">{new Date(p.expiryDate).toLocaleDateString()}</p></div>}
+            </div>
+          ) : <Reviews product={p} />}
         </div>
       </div>
 

@@ -30,7 +30,17 @@ function NumField({ label, value, onCommit, prefix, width = 'w-24' }) {
   );
 }
 
-const blank = { name: '', nameBn: '', category: '', shortDescription: '', description: '', origin: '', images: [], price: '', comparePrice: '', unit: 'kg', weightKg: 1, stockStatus: 'in_stock', stockQty: 0, lowStockThreshold: 10, allowPreOrder: false, isSeasonal: false, seasonAvailable: true, seasonLabel: '', isOrganic: false, isPure: false, isTodaysFresh: false, isTodaysOffer: false, offerNote: '', isActive: true };
+const blank = {
+  name: '', nameBn: '', brand: '', sku: '', category: '',
+  flavor: '', ingredients: '', netWeight: '', packagingType: '',
+  expiryDate: '', storageInstructions: '',
+  shortDescription: '', description: '', origin: '', images: [],
+  price: '', comparePrice: '', unit: 'pack', weightKg: 0.15,
+  stockStatus: 'in_stock', stockQty: 0, lowStockThreshold: 5,
+  allowPreOrder: false,
+  isBestSeller: false, isNewArrival: false, isFeatured: false,
+  isTodaysOffer: false, offerNote: '', isActive: true
+};
 
 function ProductForm({ product, categories, onClose, onSaved }) {
   const [f, setF] = useState(() => ({ ...blank, ...(product ? { ...product, category: product.category?._id || product.category } : { category: categories[0]?._id || '' }) }));
@@ -48,7 +58,7 @@ function ProductForm({ product, categories, onClose, onSaved }) {
   const save = async (e) => {
     e.preventDefault();
     setBusy(true);
-    const body = { ...f, price: Number(f.price), comparePrice: Number(f.comparePrice || 0), weightKg: Number(f.weightKg || 0), stockQty: Number(f.stockQty || 0), lowStockThreshold: Number(f.lowStockThreshold || 0) };
+    const body = { ...f, expiryDate: f.expiryDate || null, price: Number(f.price), comparePrice: Number(f.comparePrice || 0), weightKg: Number(f.weightKg || 0), stockQty: Number(f.stockQty || 0), lowStockThreshold: Number(f.lowStockThreshold || 0) };
     delete body._id; delete body.__v; delete body.createdAt; delete body.updatedAt; delete body.id; delete body.availability; delete body.purchasable; delete body.discountPercent;
     try {
       const saved = product ? await api.aput(`/admin/products/${product._id}`, body) : await api.apost('/admin/products', body);
@@ -63,12 +73,30 @@ function ProductForm({ product, categories, onClose, onSaved }) {
       <form onSubmit={save} className="relative flex max-h-[94vh] w-full max-w-3xl animate-rise flex-col rounded-t-3xl bg-white sm:rounded-3xl">
         <div className="flex items-center justify-between border-b border-earth-100 p-4"><h2 className="font-sans text-lg font-bold">{product ? 'Edit product' : 'Add new product'}</h2><button type="button" onClick={onClose} aria-label="Close"><X /></button></div>
         <div className="space-y-5 overflow-y-auto p-4 sm:p-6">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div><label className="label">Name (English) *</label><input required className="input" value={f.name} onChange={set('name')} /></div>
-            <div><label className="label">নাম (বাংলা)</label><input className="input" value={f.nameBn || ''} onChange={set('nameBn')} /></div>
-            <div><label className="label">Category *</label><select required className="input" value={f.category} onChange={set('category')}>{categories.map((c) => <option key={c._id} value={c._id}>{c.icon} {c.name}</option>)}</select></div>
-            <div><label className="label">Origin / source</label><input className="input" placeholder="e.g. Chapainawabganj" value={f.origin || ''} onChange={set('origin')} /></div>
-          </div>
+          <fieldset className="rounded-2xl border border-earth-100 p-4">
+            <legend className="px-2 text-sm font-bold text-leaf-700">Basic Information</legend>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div><label className="label">Product name (English) *</label><input required className="input" value={f.name} onChange={set('name')} /></div>
+              <div><label className="label">Product name (বাংলা)</label><input className="input" value={f.nameBn || ''} onChange={set('nameBn')} /></div>
+              <div><label className="label">Category *</label><select required className="input" value={f.category} onChange={set('category')}>{categories.map((c) => <option key={c._id} value={c._id}>{c.icon} {c.name}</option>)}</select></div>
+              <div><label className="label">Brand</label><input className="input" placeholder="e.g. Cadbury, Hershey's" value={f.brand || ''} onChange={set('brand')} /></div>
+              <div><label className="label">SKU / Product code</label><input className="input" placeholder="e.g. ESR-CHO-001" value={f.sku || ''} onChange={set('sku')} /></div>
+              <div><label className="label">Origin / Country of origin</label><input className="input" placeholder="e.g. Belgium, Malaysia" value={f.origin || ''} onChange={set('origin')} /></div>
+            </div>
+          </fieldset>
+
+          <fieldset className="rounded-2xl border border-earth-100 p-4">
+            <legend className="px-2 text-sm font-bold text-leaf-700">Product Details</legend>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div><label className="label">Flavor / Variant</label><input className="input" placeholder="e.g. Dark Chocolate, Hazelnut" value={f.flavor || ''} onChange={set('flavor')} /></div>
+              <div><label className="label">Net weight / Volume</label><input className="input" placeholder="e.g. 100 g, 250 ml, 1 kg" value={f.netWeight || ''} onChange={set('netWeight')} /></div>
+              <div><label className="label">Packaging type</label><input className="input" placeholder="e.g. Box, Jar, Pouch, Gift Pack" value={f.packagingType || ''} onChange={set('packagingType')} /></div>
+              <div><label className="label">Expiry date</label><input type="date" className="input" value={f.expiryDate ? String(f.expiryDate).slice(0, 10) : ''} onChange={set('expiryDate')} /></div>
+              <div className="sm:col-span-2"><label className="label">Ingredients</label><textarea rows={2} className="input" placeholder="List ingredients and allergens where applicable" value={f.ingredients || ''} onChange={set('ingredients')} /></div>
+              <div className="sm:col-span-2"><label className="label">Storage instructions</label><input className="input" placeholder="e.g. Store in a cool, dry place" value={f.storageInstructions || ''} onChange={set('storageInstructions')} /></div>
+            </div>
+          </fieldset>
+
           <div><label className="label">Short description (shown on cards & Facebook shares)</label><input className="input" maxLength={220} value={f.shortDescription || ''} onChange={set('shortDescription')} /></div>
           <div><label className="label">Full description</label><textarea rows={4} className="input" value={f.description || ''} onChange={set('description')} /></div>
 
@@ -77,8 +105,8 @@ function ProductForm({ product, categories, onClose, onSaved }) {
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               <div><label className="label">Price (৳) *</label><input required type="number" min="0" className="input" value={f.price} onChange={set('price')} /></div>
               <div><label className="label">Old price (৳)</label><input type="number" min="0" className="input" placeholder="for discount tag" value={f.comparePrice || ''} onChange={set('comparePrice')} /></div>
-              <div><label className="label">Unit</label><input className="input" placeholder="kg, 500 g, dozen" value={f.unit} onChange={set('unit')} /></div>
-              <div><label className="label">Weight (kg)</label><input type="number" step="0.1" min="0" className="input" value={f.weightKg} onChange={set('weightKg')} /></div>
+              <div><label className="label">Pack size / Selling unit</label><input className="input" placeholder="e.g. 100 g pack, 1 box, 250 ml" value={f.unit} onChange={set('unit')} /></div>
+              <div><label className="label">Shipping weight (kg)</label><input required type="number" step="0.001" min="0.001" className="input" value={f.weightKg} onChange={set('weightKg')} /></div>
             </div>
           </fieldset>
 
@@ -93,17 +121,15 @@ function ProductForm({ product, categories, onClose, onSaved }) {
           </fieldset>
 
           <fieldset className="rounded-2xl border border-earth-100 p-4">
-            <legend className="px-2 text-sm font-bold text-leaf-700">Badges, season & homepage</legend>
+            <legend className="px-2 text-sm font-bold text-leaf-700">Store Badges & Visibility</legend>
             <div className="grid gap-2.5 sm:grid-cols-2">
-              {chk('isOrganic', '🌱 Organic badge')}{chk('isPure', '✨ 100% Pure badge')}
-              {chk('isSeasonal', '🍃 Seasonal product')}{f.isSeasonal && chk('seasonAvailable', 'Season is ON (available now)')}
-              {chk('isTodaysFresh', "☀️ Show in “Today's Fresh Arrivals”")}{chk('isTodaysOffer', "🔥 Show in “Today's Offers”")}
+              {chk('isBestSeller', '🏆 Best Seller')}
+              {chk('isNewArrival', '🆕 New Arrival')}
+              {chk('isFeatured', '⭐ Featured Product')}
+              {chk('isTodaysOffer', '🔥 Special Offer')}
               {chk('isActive', '👁 Visible in store')}
             </div>
-            <div className="mt-3 grid gap-4 sm:grid-cols-2">
-              {f.isSeasonal && <div><label className="label">Season label</label><input className="input" placeholder="May – July" value={f.seasonLabel || ''} onChange={set('seasonLabel')} /></div>}
-              {f.isTodaysOffer && <div><label className="label">Offer note</label><input className="input" placeholder="Save ৳50 today" value={f.offerNote || ''} onChange={set('offerNote')} /></div>}
-            </div>
+            {f.isTodaysOffer && <div className="mt-3"><label className="label">Offer note</label><input className="input" placeholder="e.g. Save ৳50" value={f.offerNote || ''} onChange={set('offerNote')} /></div>}
           </fieldset>
 
           <div>

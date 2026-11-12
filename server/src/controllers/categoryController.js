@@ -3,6 +3,11 @@ import Category from '../models/Category.js';
 import Product from '../models/Product.js';
 import { HttpError, asyncHandler } from '../utils/helpers.js';
 
+export const adminListCategories = asyncHandler(async (_req, res) => {
+  const categories = await Category.find({}).sort('sortOrder name').lean();
+  res.json(categories);
+});
+
 export const listCategories = asyncHandler(async (_req, res) => {
   const cats = await Category.find({ isActive: true }).sort('sortOrder name').lean();
   res.json(cats);

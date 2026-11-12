@@ -15,8 +15,8 @@ function setIn(obj, path, value) {
   return next;
 }
 
-const TABS = [['banners', '🖼 Banners'], ['announce', '📣 Announcement'], ['business', '🏪 Business info'], ['delivery', '🚚 Delivery & Payment'], ['facebook', '📘 Facebook'], ['system', '⚙️ SMS & SEO']];
-const THEMES = [['leaf', 'Green'], ['honey', 'Honey'], ['earth', 'Earth'], ['mango', 'Mango']];
+const TABS = [['banners', '🖼 Banners'], ['announce', '📣 Announcement'], ['business', '🏪 Business info'], ['delivery', '🚚 Delivery & Payment'], ['facebook', '🔗 Social Links'], ['system', '⚙️ SMS & SEO']];
+const THEMES = [['earth', 'Espresso'], ['leaf', 'Cocoa'], ['honey', 'Gold'], ['mango', 'Caramel']];
 
 function ImageInput({ value, onChange, label = 'Image' }) {
   const [busy, setBusy] = useState(false);
@@ -90,7 +90,7 @@ export default function AdminSettings() {
                 <div className="flex items-center gap-1"><Check path={`banners.${i}.active`} label="Active" /><button className="btn-ghost !p-2" onClick={() => move('banners', i, -1)} aria-label="Move up"><ArrowUp size={16} /></button><button className="btn-ghost !p-2" onClick={() => move('banners', i, 1)} aria-label="Move down"><ArrowDown size={16} /></button><button className="btn-ghost !p-2 text-red-600" onClick={() => set('banners', s.banners.filter((_, n) => n !== i))} aria-label="Delete"><Trash2 size={16} /></button></div></div>
               <div className="grid gap-3 sm:grid-cols-2"><T path={`banners.${i}.title`} label="Headline" /><T path={`banners.${i}.ctaText`} label="Button text" /></div>
               <div><label className="label">Sub-headline</label><textarea rows={2} className="input" value={b.subtitle || ''} onChange={(e) => set(`banners.${i}.subtitle`, e.target.value)} /></div>
-              <div className="grid gap-3 sm:grid-cols-2"><T path={`banners.${i}.ctaLink`} label="Button link" placeholder="/shop?category=pure-honey" /><div><label className="label">Colour theme (when no image)</label><select className="input" value={b.theme} onChange={(e) => set(`banners.${i}.theme`, e.target.value)}>{THEMES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></div></div>
+              <div className="grid gap-3 sm:grid-cols-2"><T path={`banners.${i}.ctaLink`} label="Button link" placeholder="/shop?category=chocolates" /><div><label className="label">Colour theme (when no image)</label><select className="input" value={b.theme} onChange={(e) => set(`banners.${i}.theme`, e.target.value)}>{THEMES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></div></div>
               <ImageInput label="Background image (optional, wide 1600×700 works best)" value={b.image} onChange={(v) => set(`banners.${i}.image`, v)} />
             </div>
           ))}
@@ -98,14 +98,14 @@ export default function AdminSettings() {
         </>)}
 
         {tab === 'announce' && (
-          <div className="card space-y-3 p-4"><Check path="announcement.active" label="Show announcement bar at the very top of the site" /><T path="announcement.text" label="Message" placeholder="🔥 Fresh Himsagar mango arrived today!" /><T path="announcement.link" label="Link (optional)" placeholder="/shop?featured=fresh" />
+          <div className="card space-y-3 p-4"><Check path="announcement.active" label="Show announcement bar at the very top of the site" /><T path="announcement.text" label="Message" placeholder="🍫 Explore our chocolate collection and special picks" /><T path="announcement.link" label="Link (optional)" placeholder="/shop?featured=new" />
             <hr className="border-earth-100" /><T path="brand.name" label="Brand name" /><T path="brand.nameBn" label="Brand name (বাংলা)" /><T path="brand.tagline" label="Tagline" /><ImageInput label="Logo (square)" value={s.brand.logo} onChange={(v) => set('brand.logo', v)} /></div>
         )}
 
         {tab === 'business' && (
           <div className="card space-y-3 p-4">
             <div><label className="label">Phone numbers (one per line)</label><textarea rows={2} className="input" value={(s.contact.phones || []).join('\n')} onChange={(e) => set('contact.phones', e.target.value.split('\n').map((x) => x.trim()).filter(Boolean))} /></div>
-            <div className="grid gap-3 sm:grid-cols-2"><T path="contact.whatsapp" label="WhatsApp number (880…, no +)" placeholder="8801712345678" /><T path="contact.messengerUsername" label="Messenger username (m.me/…)" /><T path="contact.email" label="Official email" type="email" /><T path="contact.mapUrl" label="Google Maps link" /></div>
+            <div className="grid gap-3 sm:grid-cols-2"><T path="contact.whatsapp" label="WhatsApp number (880…, no +)" placeholder="8801722931841" /><T path="contact.email" label="Official email" type="email" /><T path="contact.mapUrl" label="Google Maps link (optional)" /></div>
             <T path="contact.address" label="Physical address" /><div className="grid gap-3 sm:grid-cols-2"><T path="contact.hours" label="Business hours" /><T path="contact.hoursNote" label="Hours note" /></div>
             <hr className="border-earth-100" /><T path="about.title" label="About — headline" /><div><label className="label">About — story</label><textarea rows={4} className="input" value={s.about.body} onChange={(e) => set('about.body', e.target.value)} /></div>
           </div>
@@ -123,18 +123,18 @@ export default function AdminSettings() {
             <Check path="payment.sslcommerz.enabled" label="SSLCommerz online payment (needs keys in server .env)" /></div>
         </>)}
 
-        {tab === 'facebook' && (<>
-          <div className="card space-y-3 p-4"><div className="grid gap-3 sm:grid-cols-2"><T path="social.facebookPageUrl" label="Facebook Page URL" placeholder="https://facebook.com/yourpage" /><T path="social.facebookReviewsUrl" label="Facebook reviews URL" /><T path="social.instagram" label="Instagram URL" /><T path="social.youtube" label="YouTube URL" /></div>
-            <p className="text-xs text-earth-500">The homepage shows your live Facebook Page feed automatically once the Page URL is set (the Page must be public).</p></div>
-          <h3 className="font-sans font-bold">Customer feedback from Facebook</h3>
-          <p className="-mt-2 text-xs text-earth-500">Copy real comments/reviews from your Page (with the customer's permission) to show them as social proof.</p>
-          {s.facebookReviews.map((r, i) => (
-            <div key={i} className="card space-y-3 p-4"><div className="flex justify-between"><span className="text-sm font-semibold">Feedback {i + 1}</span><button className="text-red-600" onClick={() => set('facebookReviews', s.facebookReviews.filter((_, n) => n !== i))} aria-label="Delete"><Trash2 size={16} /></button></div>
-              <div className="grid gap-3 sm:grid-cols-3"><T path={`facebookReviews.${i}.name`} label="Customer name" /><T path={`facebookReviews.${i}.date`} label="Date" placeholder="12 Jun 2026" /><div><label className="label">Rating</label><select className="input" value={r.rating || 5} onChange={(e) => set(`facebookReviews.${i}.rating`, Number(e.target.value))}>{[5, 4, 3, 2, 1].map((n) => <option key={n}>{n}</option>)}</select></div></div>
-              <div><label className="label">Comment</label><textarea rows={2} className="input" value={r.text || ''} onChange={(e) => set(`facebookReviews.${i}.text`, e.target.value)} /></div><T path={`facebookReviews.${i}.link`} label="Link to the post (optional)" /></div>
-          ))}
-          <button className="btn-outline w-full" onClick={() => set('facebookReviews', [...s.facebookReviews, { name: '', text: '', rating: 5, date: '', link: '' }])}><Plus size={16} /> Add feedback</button>
-        </>)}
+        {tab === 'facebook' && (
+          <div className="card space-y-3 p-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <T path="social.facebookPageUrl" label="Facebook Page URL" placeholder="https://www.facebook.com/esr.choco.bd" />
+              <T path="contact.messengerUsername" label="Messenger username (without @)" placeholder="Your Messenger username" />
+              <T path="social.instagram" label="Instagram URL" />
+              <T path="social.youtube" label="YouTube URL" />
+              <T path="social.tiktok" label="TikTok URL" />
+            </div>
+            <p className="text-xs leading-5 text-earth-500">Your Facebook Page appears as a simple link in the footer. Customer messages and order questions are directed to WhatsApp; no embedded Facebook feed or page card is shown.</p>
+          </div>
+        )}
 
         {tab === 'system' && (<>
           <div className="card space-y-3 p-4"><h3 className="font-sans font-bold">SMS notifications</h3><Check path="sms.enabled" label="Send SMS to customers on new orders" /><Check path="sms.notifyOnStatus" label="Also send SMS when order status changes" /><T path="sms.adminPhone" label="Your phone (get an SMS for every new order)" placeholder="01XXXXXXXXX" />

@@ -27,7 +27,7 @@ export const AVAILABILITY = {
   preorder: { label: 'Pre-Order', cls: 'bg-sky-100 text-sky-800' },
   out_of_stock: { label: 'Out of Stock', cls: 'bg-red-100 text-red-700' },
   coming_soon: { label: 'Coming Soon', cls: 'bg-violet-100 text-violet-800' },
-  out_of_season: { label: 'Out of Season', cls: 'bg-earth-100 text-earth-700' },
+  out_of_season: { label: 'Unavailable', cls: 'bg-earth-100 text-earth-700' },
 };
 
 export const ORDER_STATUS = {

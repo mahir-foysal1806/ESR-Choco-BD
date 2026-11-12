@@ -5,10 +5,14 @@ import { assetUrl } from '../lib/api';
 import { AVAILABILITY } from '../lib/format';
 
 const PLACEHOLDER = {
-  'pure-honey': { emoji: '🍯', cls: 'from-honey-200 to-honey-400' },
-  'seasonal-fruits': { emoji: '🥭', cls: 'from-orange-200 to-leaf-300' },
-  'agricultural-products': { emoji: '🌾', cls: 'from-earth-100 to-leaf-200' },
+  chocolates: { emoji: '🍫', cls: 'from-[#f1dfd2] to-[#c99a7d]' },
+  coffee: { emoji: '☕', cls: 'from-[#e8d4c2] to-[#9a6b4c]' },
+  'premium-nuts': { emoji: '🌰', cls: 'from-[#f1e5d1] to-[#c7a77e]' },
+  'premium-dates': { emoji: '🌴', cls: 'from-[#ead7c2] to-[#b58a62]' },
+  'gift-boxes': { emoji: '🎁', cls: 'from-[#f2e2d8] to-[#c58d79]' },
+  'gift-items': { emoji: '🎁', cls: 'from-[#f2e2d8] to-[#c58d79]' },
 };
+
 
 export function ProductImage({
   src,
@@ -18,7 +22,7 @@ export function ProductImage({
   priority = false,
 }) {
   const [failed, setFailed] = useState(false);
-  const ph = PLACEHOLDER[category] || PLACEHOLDER['agricultural-products'];
+  const ph = PLACEHOLDER[category] || { emoji: '🍫', cls: 'from-[#f4e9df] to-[#d9b99f]' };
   if (!src || failed)
     return (
       <div className={`flex items-center justify-center bg-gradient-to-br ${ph.cls} ${className}`} role="img" aria-label={alt}>
@@ -94,16 +98,16 @@ export function SectionHeader({ eyebrow, title, subtitle, to, linkText = 'View a
     <div className="mb-5 flex items-end justify-between gap-3">
       <div>
         {eyebrow && (
-          <p className="mb-1 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-honey-600">
+          <p className="mb-1 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#986b4b]">
             {Icon && <Icon size={14} />}
             {eyebrow}
           </p>
         )}
-        <h2 className="text-2xl font-bold text-leaf-800 sm:text-3xl">{title}</h2>
+        <h2 className="text-2xl font-bold text-[#4a2b20] sm:text-3xl">{title}</h2>
         {subtitle && <p className="mt-1 max-w-xl text-sm text-earth-600">{subtitle}</p>}
       </div>
       {to && (
-        <Link to={to} className="flex shrink-0 items-center gap-0.5 text-sm font-semibold text-leaf-700 hover:underline">
+        <Link to={to} className="flex shrink-0 items-center gap-0.5 text-sm font-semibold text-[#70412e] hover:underline">
           {linkText} <ChevronRight size={16} />
         </Link>
       )}
@@ -132,11 +136,11 @@ export function ProductGridSkeleton({ n = 8 }) {
   );
 }
 
-export function Empty({ icon = '🌱', title, text, children }) {
+export function Empty({ icon = '🍫', title, text, children }) {
   return (
     <div className="card mx-auto max-w-md p-8 text-center">
       <div className="text-5xl">{icon}</div>
-      <h3 className="mt-3 text-xl font-bold text-leaf-800">{title}</h3>
+      <h3 className="mt-3 text-xl font-bold text-[#4a2b20]">{title}</h3>
       {text && <p className="mt-1 text-sm text-earth-600">{text}</p>}
       <div className="mt-4 flex justify-center gap-2">{children}</div>
     </div>

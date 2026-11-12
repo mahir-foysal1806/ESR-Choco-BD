@@ -2,11 +2,17 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import Product from '../models/Product.js';
+import Category from '../models/Category.js';
 import { getSettings } from '../models/AdminSettings.js';
 import { asyncHandler, escapeHtml } from '../utils/helpers.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.resolve(__dirname, '../../../public');
+const LEGACY_CATEGORY_SLUGS = ['pure-honey', 'seasonal-fruits', 'agricultural-products'];
+const publicProductFilter = async () => {
+  const legacyIds = await Category.find({ slug: { $in: LEGACY_CATEGORY_SLUGS } }).distinct('_id');
+  return { isActive: true, ...(legacyIds.length ? { category: { $nin: legacyIds } } : {}) };
+};
 const site = () => (process.env.SITE_URL || 'http://localhost:5173').replace(/\/$/, '');
 const abs = (u) => (!u ? '' : /^https?:/.test(u) ? u : `${site()}${u.startsWith('/') ? '' : '/'}${u}`);
 
@@ -54,7 +60,7 @@ export const spaPage = asyncHandler(async (req, res, next) => {
   let data = { title: s.seo.title, description: s.seo.description, image: abs(s.seo.ogImage), url: site() + req.path };
   const m = req.path.match(/^\/product\/([^/]+)$/);
   if (m) {
-    const p = await Product.findOne({ slug: m[1], isActive: true });
+    const p = await Product.findOne({ slug: m[1], ...(await publicProductFilter()) });
     if (p) data = productMetaData(p, s);
   }
   res.set('Content-Type', 'text/html').send(withMeta(html, metaTags(data)));
@@ -62,7 +68,7 @@ export const spaPage = asyncHandler(async (req, res, next) => {
 
 // Dev helper & share-link: /share/product/:slug -> crawler gets OG tags, humans get redirected
 export const shareProduct = asyncHandler(async (req, res) => {
-  const p = await Product.findOne({ slug: req.params.slug, isActive: true });
+  const p = await Product.findOne({ slug: req.params.slug, ...(await publicProductFilter()) });
   const client = (process.env.CLIENT_URL || site()).replace(/\/$/, '');
   if (!p) return res.redirect(client);
   const s = await getSettings();
@@ -71,7 +77,7 @@ export const shareProduct = asyncHandler(async (req, res) => {
 });
 
 export const sitemap = asyncHandler(async (_req, res) => {
-  const products = await Product.find({ isActive: true }).select('slug updatedAt').lean();
+  const products = await Product.find(await publicProductFilter()).select('slug updatedAt').lean();
   const urls = [
     { loc: `${site()}/`, mod: new Date() },
     { loc: `${site()}/shop`, mod: new Date() },

@@ -125,7 +125,6 @@ export default function ProductDetail() {
               {p.packagingType && <div><span className="text-earth-500">Packaging</span><p className="font-semibold text-earth-800">{p.packagingType}</p></div>}
             </div>
           )}
-          {p.isSeasonal && p.seasonLabel && <p className="mt-2 text-sm text-orange-700">🌿 Season: {p.seasonLabel}</p>}
           {p.availability === 'limited' && <p className="mt-2 text-sm font-semibold text-red-600">Hurry — only {p.stockQty} {p.unit} left!</p>}
           {pre && <p className="mt-2 rounded-lg bg-sky-50 p-3 text-sm text-sky-800">This item is available for pre-order. We'll confirm delivery timing by phone once your order is placed.</p>}
 
@@ -139,7 +138,7 @@ export default function ProductDetail() {
             </div>
           ) : (
             <div className="mt-5 rounded-xl bg-earth-100 p-4 text-sm text-earth-700">
-              {p.availability === 'out_of_season' ? 'This product is out of season right now. Follow our Facebook page to know when it returns.' : p.availability === 'coming_soon' ? 'Coming soon! Message us to be notified when it arrives.' : 'Currently out of stock. Message us and we will notify you when it is back.'}
+              {p.availability === 'out_of_season' ? 'This product is currently unavailable. Message us on WhatsApp for an update.' : p.availability === 'coming_soon' ? 'Coming soon! Message us to be notified when it arrives.' : 'Currently out of stock. Message us and we will notify you when it is back.'}
             </div>
           )}
 

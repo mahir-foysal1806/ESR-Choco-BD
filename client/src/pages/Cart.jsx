@@ -16,7 +16,7 @@ export default function Cart() {
     return (
       <div className="container-x py-16">
         <Seo title="Your Cart" noindex />
-        <Empty icon="🛒" title="Your cart is empty" text="Add some fresh honey, fruits or farm products."><Link to="/shop" className="btn-primary">Browse products</Link></Empty>
+        <Empty icon="🛒" title="Your cart is empty" text="Add chocolates, coffee, premium nuts, dates or a gift for someone special."><Link to="/shop" className="btn-primary">Browse products</Link></Empty>
       </div>
     );
 
@@ -25,7 +25,7 @@ export default function Cart() {
   return (
     <div className="container-x py-6">
       <Seo title="Your Cart" noindex />
-      <h1 className="mb-4 text-3xl font-bold text-leaf-800">Your Cart</h1>
+      <h1 className="mb-4 text-3xl font-bold text-[#321b15]">Your Cart</h1>
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
         <div className="space-y-3">
           {freeLeft > 0 && <p className="flex items-center gap-2 rounded-xl bg-honey-50 p-3 text-sm text-honey-700 ring-1 ring-honey-200"><Truck size={16} /> Add {money(freeLeft)} more for <b>free delivery</b>!</p>}
@@ -49,7 +49,7 @@ export default function Cart() {
           <h2 className="font-sans text-lg font-bold">Order Summary</h2>
           <div className="flex justify-between text-sm"><span>Subtotal</span><b>{money(subtotal)}</b></div>
           <div className="flex justify-between text-sm text-earth-600"><span>Delivery</span><span>Calculated at checkout</span></div>
-          <p className="rounded-lg bg-leaf-50 p-2.5 text-xs text-leaf-800">Inside Dhaka {money(s.insideDhaka)} · Outside Dhaka {money(s.outsideDhaka)}{s.weightBased ? ` (+${money(s.extraPerKg)}/kg over ${s.baseWeightKg}kg — your cart: ${weightKg.toFixed(1)}kg)` : ''}</p>
+          <p className="rounded-lg bg-leaf-50 p-2.5 text-xs text-[#321b15]">Inside Dhaka {money(s.insideDhaka)} · Outside Dhaka {money(s.outsideDhaka)}{s.weightBased ? ` (+${money(s.extraPerKg)}/kg over ${s.baseWeightKg}kg — your cart: ${weightKg.toFixed(1)}kg)` : ''}</p>
           <button className="btn-honey w-full !py-3.5 text-base" onClick={() => nav('/checkout')}>Proceed to Checkout <ArrowRight size={18} /></button>
           <Link to="/shop" className="block text-center text-sm font-semibold text-leaf-700 hover:underline">Continue shopping</Link>
         </aside>

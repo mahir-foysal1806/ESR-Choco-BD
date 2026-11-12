@@ -15,20 +15,26 @@ const uniqueSlug = async (name, ignoreId) => {
 };
 
 const seasonOk = [{ isSeasonal: false }, { seasonAvailable: true }];
+const LEGACY_CATEGORY_SLUGS = ['pure-honey', 'seasonal-fruits', 'agricultural-products'];
+
+async function publicBaseFilter() {
+  const legacyIds = await Category.find({ slug: { $in: LEGACY_CATEGORY_SLUGS } }).distinct('_id');
+  return { isActive: true, ...(legacyIds.length ? { category: { $nin: legacyIds } } : {}) };
+}
 
 // ---------- Public ----------
 export const listProducts = asyncHandler(async (req, res) => {
-  const { q, category, minPrice, maxPrice, availability, sort = 'popular', featured, seasonal, page = 1, limit = 12 } = req.query;
-  const filter = { isActive: true };
+  const { q, category, minPrice, maxPrice, availability, sort = 'popular', featured, page = 1, limit = 12 } = req.query;
+  const filter = await publicBaseFilter();
   const and = [];
 
   if (category) {
     const cat = mongoose.isValidObjectId(category) ? await Category.findById(category) : await Category.findOne({ slug: category });
-    filter.category = cat ? cat._id : null;
+    filter.category = cat && !LEGACY_CATEGORY_SLUGS.includes(cat.slug) ? cat._id : null;
   }
   if (q) {
     const rx = new RegExp(escapeRegex(q.trim()), 'i');
-    and.push({ $or: [{ name: rx }, { nameBn: rx }, { shortDescription: rx }, { origin: rx }] });
+    and.push({ $or: [{ name: rx }, { nameBn: rx }, { brand: rx }, { sku: rx }, { flavor: rx }, { shortDescription: rx }, { origin: rx }] });
   }
   if (minPrice || maxPrice) {
     filter.price = {};
@@ -40,16 +46,10 @@ export const listProducts = asyncHandler(async (req, res) => {
     filter.stockQty = { $gt: 0 };
     and.push({ $or: seasonOk });
   }
-  if (featured === 'fresh') {
-    and.push({ $or: [{ isNewArrival: true }, { isTodaysFresh: true }] });
-  }
+  if (featured === 'fresh' || featured === 'new') filter.isNewArrival = true;
   if (featured === 'offer') filter.isTodaysOffer = true;
   if (featured === 'featured') filter.isFeatured = true;
   if (featured === 'best-seller') filter.isBestSeller = true;
-  if (seasonal === 'true') {
-    filter.isSeasonal = true;
-    filter.seasonAvailable = true;
-  }
   if (and.length) filter.$and = and;
 
   const sorts = {
@@ -69,22 +69,13 @@ export const listProducts = asyncHandler(async (req, res) => {
 });
 
 export const homeProducts = asyncHandler(async (_req, res) => {
-  const base = { isActive: true };
+  const base = await publicBaseFilter();
   const pop = (q) => q.populate('category', 'name nameBn slug icon');
 
-  const [fresh, offers, seasonal, popular, featured, bestSellers] = await Promise.all([
-    pop(Product.find({
-      ...base,
-      $or: [{ isNewArrival: true }, { isTodaysFresh: true }]
-    }).sort('-updatedAt').limit(12)),
+  const [newArrivals, offers, popular, featured, bestSellers] = await Promise.all([
+    pop(Product.find({ ...base, isNewArrival: true }).sort('-updatedAt').limit(12)),
 
     pop(Product.find({ ...base, isTodaysOffer: true }).sort('-updatedAt').limit(12)),
-
-    pop(Product.find({
-      ...base,
-      isSeasonal: true,
-      seasonAvailable: true
-    }).sort('-soldCount').limit(8)),
 
     pop(Product.find({ ...base, $or: seasonOk })
       .sort({ soldCount: -1, ratingAvg: -1 }).limit(8)),
@@ -96,13 +87,13 @@ export const homeProducts = asyncHandler(async (_req, res) => {
       .sort({ soldCount: -1, ratingAvg: -1 }).limit(8)),
   ]);
 
-  res.json({ fresh, offers, seasonal, popular, featured, bestSellers });
+  res.json({ newArrivals, offers, popular, featured, bestSellers });
 });
 
 export const getProduct = asyncHandler(async (req, res) => {
   const { idOrSlug } = req.params;
   const query = mongoose.isValidObjectId(idOrSlug) ? { _id: idOrSlug } : { slug: idOrSlug };
-  const product = await Product.findOne({ ...query, isActive: true }).populate('category', 'name nameBn slug icon');
+  const product = await Product.findOne({ ...query, ...(await publicBaseFilter()) }).populate('category', 'name nameBn slug icon');
   if (!product) throw new HttpError(404, 'Product not found');
   const related = await Product.find({ category: product.category._id, _id: { $ne: product._id }, isActive: true }).sort('-soldCount').limit(4);
   res.json({ product, related });
@@ -113,7 +104,7 @@ export const adminListProducts = asyncHandler(async (req, res) => {
   const { q, category } = req.query;
   const filter = {};
   if (category) filter.category = category;
-  if (q) filter.name = new RegExp(escapeRegex(q), 'i');
+  if (q) { const rx = new RegExp(escapeRegex(q.trim()), 'i'); filter.$or = [{ name: rx }, { nameBn: rx }, { brand: rx }, { sku: rx }]; }
   res.json(await Product.find(filter).populate('category', 'name slug icon').sort('-updatedAt'));
 });
 
@@ -133,7 +124,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
 });
 
 // Fast daily edits from the inventory table (price / stock / toggles)
-const QUICK_FIELDS = ['price', 'comparePrice', 'stockQty', 'stockStatus', 'isTodaysFresh', 'isTodaysOffer', 'isBestSeller', 'isNewArrival', 'isFeatured', 'seasonAvailable', 'isActive', 'allowPreOrder'];
+const QUICK_FIELDS = ['price', 'comparePrice', 'stockQty', 'stockStatus', 'isTodaysOffer', 'isBestSeller', 'isNewArrival', 'isFeatured', 'seasonAvailable', 'isActive', 'allowPreOrder'];
 export const quickUpdateProduct = asyncHandler(async (req, res) => {
   const patch = {};
   for (const k of QUICK_FIELDS) if (req.body[k] !== undefined) patch[k] = req.body[k];

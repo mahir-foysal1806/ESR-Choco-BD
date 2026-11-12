@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-import { Plus, Search, Pencil, Trash2, X, Upload, Loader2, Eraser, Sun, Flame, Leaf, Eye, EyeOff } from 'lucide-react';
+import { Plus, Search, Pencil, Trash2, X, Upload, Loader2, Sparkles, Flame, Star, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { ProductImage, AvailabilityChip } from '../components/ui';
 import { useSettings } from '../context/SettingsContext';
@@ -97,7 +97,7 @@ function ProductForm({ product, categories, onClose, onSaved }) {
             </div>
           </fieldset>
 
-          <div><label className="label">Short description (shown on cards & Facebook shares)</label><input className="input" maxLength={220} value={f.shortDescription || ''} onChange={set('shortDescription')} /></div>
+          <div><label className="label">Short description (shown on product cards and search previews)</label><input className="input" maxLength={220} value={f.shortDescription || ''} onChange={set('shortDescription')} /></div>
           <div><label className="label">Full description</label><textarea rows={4} className="input" value={f.description || ''} onChange={set('description')} /></div>
 
           <fieldset className="rounded-2xl border border-earth-100 p-4">
@@ -133,7 +133,7 @@ function ProductForm({ product, categories, onClose, onSaved }) {
           </fieldset>
 
           <div>
-            <label className="label">Photos (first is the main image & Facebook preview)</label>
+            <label className="label">Product photos (first image is the main storefront photo)</label>
             <div className="flex flex-wrap gap-2">
               {f.images.map((u, n) => (
                 <div key={u + n} className="group relative h-20 w-20 overflow-hidden rounded-xl ring-1 ring-earth-200">
@@ -175,29 +175,26 @@ export default function AdminProducts() {
     if (cat && p.category?._id !== cat) return false;
     if (view === 'low') return p.availability === 'limited';
     if (view === 'out') return ['out_of_stock', 'out_of_season', 'coming_soon'].includes(p.availability);
-    if (view === 'fresh') return p.isTodaysFresh;
+    if (view === 'new') return p.isNewArrival;
+    if (view === 'best') return p.isBestSeller;
+    if (view === 'featured') return p.isFeatured;
     if (view === 'offer') return p.isTodaysOffer;
     if (view === 'hidden') return !p.isActive;
     return true;
   }), [data, q, cat, view]);
 
-  const resetDaily = async () => {
-    if (!confirm("Clear all 'Today's Fresh' and 'Today's Offer' flags?")) return;
-    const r = await api.apost('/admin/products/reset-daily');
-    toast.success(`Cleared ${r.cleared} product(s)`); reload();
-  };
   const del = async (p) => {
     if (!confirm(`Delete "${p.name}" permanently?`)) return;
     try { await api.adel(`/admin/products/${p._id}`); setData((c) => c.filter((x) => x._id !== p._id)); toast.success('Deleted'); } catch (e) { toast.error(e.message); }
   };
 
-  const views = [['all', 'All'], ['low', 'Low stock'], ['out', 'Unavailable'], ['fresh', 'Fresh today'], ['offer', 'Offers'], ['hidden', 'Hidden']];
+  const views = [['all', 'All products'], ['low', 'Low stock'], ['out', 'Unavailable'], ['new', 'New arrivals'], ['best', 'Best sellers'], ['featured', 'Featured'], ['offer', 'Offers'], ['hidden', 'Hidden']];
 
   return (
     <div className="mx-auto max-w-6xl">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div><h1 className="text-2xl font-bold text-leaf-800 sm:text-3xl">Products & Daily Stock</h1><p className="text-sm text-earth-500">Edit price and stock right in the list — changes go live instantly.</p></div>
-        <div className="flex gap-2"><button onClick={resetDaily} className="btn-ghost border border-earth-200 text-xs"><Eraser size={15} /> End-of-day reset</button><button onClick={() => setEditing('new')} className="btn-primary"><Plus size={16} /> Add product</button></div>
+        <div><h1 className="text-2xl font-bold text-leaf-800 sm:text-3xl">Product catalogue</h1><p className="text-sm text-earth-500">Manage product details, pricing, stock and storefront collections.</p></div>
+        <button onClick={() => setEditing('new')} className="btn-primary"><Plus size={16} /> Add product</button>
       </div>
 
       <div className="mb-3 flex flex-col gap-2 sm:flex-row">
@@ -223,9 +220,10 @@ export default function AdminProducts() {
                   <select className="input mt-0.5 !w-36 !rounded-lg !py-1.5 text-sm" value={p.stockStatus} onChange={(e) => quick(p, { stockStatus: e.target.value })}><option value="in_stock">In Stock</option><option value="out_of_stock">Out of Stock</option><option value="coming_soon">Coming Soon</option></select>
                 </label>
                 <div className="flex flex-wrap gap-1.5">
-                  <Toggle on={p.isTodaysFresh} onChange={(v) => quick(p, { isTodaysFresh: v })} label="Fresh today" icon={Sun} tone="leaf" />
+                  <Toggle on={p.isNewArrival} onChange={(v) => quick(p, { isNewArrival: v })} label="New" icon={Sparkles} tone="leaf" />
+                  <Toggle on={p.isBestSeller} onChange={(v) => quick(p, { isBestSeller: v })} label="Best seller" icon={Star} tone="honey" />
+                  <Toggle on={p.isFeatured} onChange={(v) => quick(p, { isFeatured: v })} label="Featured" icon={Sparkles} tone="orange" />
                   <Toggle on={p.isTodaysOffer} onChange={(v) => quick(p, { isTodaysOffer: v })} label="Offer" icon={Flame} tone="honey" />
-                  {p.isSeasonal && <Toggle on={p.seasonAvailable} onChange={(v) => quick(p, { seasonAvailable: v })} label="In season" icon={Leaf} tone="orange" />}
                   <Toggle on={p.isActive} onChange={(v) => quick(p, { isActive: v })} label={p.isActive ? 'Visible' : 'Hidden'} icon={p.isActive ? Eye : EyeOff} tone="gray" />
                 </div>
               </div>

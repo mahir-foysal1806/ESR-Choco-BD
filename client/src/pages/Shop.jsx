@@ -34,7 +34,7 @@ export default function Shop() {
   useEffect(() => { if (dq !== get('q')) set({ q: dq }); }, [dq]); // eslint-disable-line
 
   const query = useMemo(
-    () => ({ q: get('q'), category: get('category'), sort: get('sort', 'popular'), minPrice: get('minPrice'), maxPrice: get('maxPrice'), availability: get('availability'), featured: get('featured'), seasonal: get('seasonal') }),
+    () => ({ q: get('q'), category: get('category'), sort: get('sort', 'popular'), minPrice: get('minPrice'), maxPrice: get('maxPrice'), availability: get('availability'), featured: get('featured') }),
     [sp] // eslint-disable-line
   );
 
@@ -54,8 +54,8 @@ export default function Shop() {
   }, [query, page]);
 
   const activeCat = categories.find((c) => c.slug === query.category);
-  const title = query.featured === 'fresh' ? 'New Arrivals' : query.featured === 'offer' ? "Today's Offers" : query.featured === 'featured' ? 'Featured Products' : query.featured === 'best-seller' ? 'Best Sellers' : query.seasonal ? 'Seasonal Specials' : activeCat?.name || 'All Products';
-  const hasFilters = query.minPrice || query.maxPrice || query.availability || query.seasonal || query.featured;
+  const title = (query.featured === 'fresh' || query.featured === 'new') ? 'New Arrivals' : query.featured === 'offer' ? "Today's Offers" : query.featured === 'featured' ? 'Featured Products' : query.featured === 'best-seller' ? 'Best Sellers' : activeCat?.name || 'All Products';
+  const hasFilters = query.minPrice || query.maxPrice || query.availability || query.featured;
 
   const Filters = (
     <div className="space-y-5">
@@ -71,11 +71,8 @@ export default function Shop() {
       <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium">
         <input type="checkbox" className="h-4 w-4 accent-leaf-600" checked={query.availability === 'in_stock'} onChange={(e) => set({ availability: e.target.checked ? 'in_stock' : '' })} /> In stock only
       </label>
-      <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium">
-        <input type="checkbox" className="h-4 w-4 accent-leaf-600" checked={!!query.seasonal} onChange={(e) => set({ seasonal: e.target.checked ? 'true' : '' })} /> In-season specials
-      </label>
       {hasFilters && (
-        <button className="btn-ghost w-full !py-2 text-red-600" onClick={() => { setPrice({ min: '', max: '' }); set({ minPrice: '', maxPrice: '', availability: '', seasonal: '', featured: '' }); }}>
+        <button className="btn-ghost w-full !py-2 text-red-600" onClick={() => { setPrice({ min: '', max: '' }); set({ minPrice: '', maxPrice: '', availability: '', featured: '' }); }}>
           <X size={14} /> Clear filters
         </button>
       )}
@@ -84,14 +81,14 @@ export default function Shop() {
 
   return (
     <div className="container-x py-6">
-      <Seo title={title} description={`Shop ${title.toLowerCase()} — pure, fresh and delivered across Bangladesh.`} />
-      <h1 className="text-3xl font-bold text-leaf-800">{title}</h1>
+      <Seo title={title} description={`Shop ${title.toLowerCase()} — chocolates, coffee, premium nuts, dates and gifts delivered across Bangladesh.`} />
+      <h1 className="text-3xl font-bold text-[#321b15]">{title}</h1>
       <p className="text-sm text-earth-500">{loading && page === 1 ? 'Loading…' : `${meta.total} product${meta.total === 1 ? '' : 's'}`}</p>
 
       <div className="mt-4 flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
           <Search size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-earth-400" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} className="input pl-10" placeholder="Search products…" aria-label="Search" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} className="input pl-10" placeholder="Search chocolates, coffee, nuts, dates…" aria-label="Search" />
           {q && <button onClick={() => setQ('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-earth-400" aria-label="Clear search"><X size={16} /></button>}
         </div>
         <div className="flex gap-2">

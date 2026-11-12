@@ -1,35 +1,48 @@
-# ESR Choco BD — E-commerce
+# ESR Choco BD — Premium Retail Store
 
-Mobile-first storefront for chocolates, premium nuts, dates and gift boxes. Existing storefront/admin workflows are retained: product and category management, stock, orders, order tracking, reviews, shipping, settings, and payment gateway hooks.
+A mobile-first e-commerce storefront for **chocolate, coffee, premium nuts, dates and gift items**. The public storefront is designed around a cocoa, cream and warm-gold visual identity.
 
 ## Stack
-- React + Vite + Tailwind CSS
+- React 18, Vite and Tailwind CSS
 - Node.js + Express API
-- MongoDB (persistent Docker volume)
-- Cloudinary for persistent image delivery
-- Docker Compose for deployment
+- MongoDB / Mongoose
+- Cloudinary for persistent product images
+- Docker Compose support
 
-## Run with Docker
+## Included storefront features
+- Premium homepage and collection-led navigation
+- Search by product name, brand, SKU and flavour
+- Product detail pages with weight, ingredients, expiry and storage details
+- Cart, checkout, order tracking and order confirmation
+- WhatsApp-first customer support
+- Admin product, category, order, review and store-settings management
+- Responsive layouts for mobile, tablet and desktop
+
+## Run locally
 1. Copy `.env.example` to `.env`.
-2. Set a long random `JWT_SECRET`, a strong `ADMIN_PASSWORD`, your real domain in `CLIENT_URL` and `SITE_URL`, and all three Cloudinary credentials.
-3. Start: `docker compose up -d --build`
-4. Seed the catalog and first admin once: `docker compose exec app node server/src/seed/seed.js`
-5. Open `https://your-domain.com/admin/login` and sign in with `ADMIN_EMAIL` / `ADMIN_PASSWORD`.
+2. Set the required environment values locally. Never commit `.env`.
+3. Install dependencies:
+   ```bash
+   npm install
+   npm install --prefix server
+   npm install --prefix client
+   ```
+4. Start both apps:
+   ```bash
+   npm run dev
+   ```
 
-MongoDB data is persisted in the `mongo_data` Docker volume. Product/banner images uploaded through Admin are sent directly to Cloudinary and the database stores their secure URLs. Container rebuilds/restarts will not erase either MongoDB data or Cloudinary media.
+## Deployment notes
+- Set the same server environment variables in your hosting provider.
+- Configure MongoDB and all three Cloudinary credentials.
+- Keep product images in Cloudinary; do not rely on the server's local upload folder in ephemeral hosting.
+- The API startup performs a small, non-destructive retail-category migration: it creates the Coffee category if missing and renames only the original seeded category display names. Existing category IDs and product references are preserved.
+- Known legacy farm categories (`pure-honey`, `seasonal-fruits`, `agricultural-products`) are hidden from the public catalogue; their database records are preserved for admin review.
+- **Do not run the seed script against an existing production database.** The seed routine is intended for a fresh database and may deactivate legacy categories/products. For an existing store, use the admin panel for product and category changes.
 
-## Local development
-- `npm install --prefix server`
-- `npm install --prefix client`
-- Set `server/.env` from `server/.env.example` and run MongoDB.
-- `npm run dev --prefix server` and `npm run dev --prefix client`.
+## Build
+```bash
+npm run build
+```
 
-## Catalog migration note
-The seed adds the ESR Choco BD categories and updates store branding. Existing legacy categories are deactivated, not deleted. Existing product records are intentionally not deleted automatically. To replace a populated demo catalog, back up MongoDB first, then run the seed with `--reset` only if you explicitly want all existing product records removed; order snapshots remain in orders.
-
-## Production checklist
-- Configure TLS/reverse proxy and domain DNS.
-- Use strong secrets; never commit `.env`.
-- Configure payment provider credentials before enabling a gateway.
-- Set real contact, shipping and social details in Admin → Site Settings.
-- Back up MongoDB volume regularly; Cloudinary is the media origin.
+The project does not currently include an automated test suite.

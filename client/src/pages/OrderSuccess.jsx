@@ -1,5 +1,5 @@
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import { CheckCircle2, XCircle, PackageSearch, MessageCircle, Facebook } from 'lucide-react';
+import { CheckCircle2, XCircle, PackageSearch, MessageCircle } from 'lucide-react';
 import Seo from '../components/Seo';
 import { useSettings } from '../context/SettingsContext';
 import { money } from '../lib/format';
@@ -43,7 +43,7 @@ export default function OrderSuccess() {
           <Link to="/track" className="btn-primary"><PackageSearch size={16} /> Track order</Link>
           <Link to="/shop" className="btn-outline">Continue shopping</Link>
           {wa && <a href={wa} target="_blank" rel="noreferrer" className="btn bg-[#25D366] text-white"><MessageCircle size={16} /> WhatsApp us</a>}
-          {settings.social.facebookPageUrl && <a href={settings.social.facebookPageUrl} target="_blank" rel="noreferrer" className="btn bg-[#1877F2] text-white"><Facebook size={16} /> Follow on Facebook</a>}
+
         </div>
         <p className="mt-4 text-xs text-earth-500">Save your order ID and phone number to track delivery anytime.</p>
       </div>

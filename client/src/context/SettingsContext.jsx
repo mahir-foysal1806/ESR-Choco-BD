@@ -3,11 +3,11 @@ import { api } from '../lib/api';
 
 // Safe defaults so the UI renders instantly, even before the API answers
 const FALLBACK = {
-  brand: { name: 'ESR Choco BD', nameBn: 'ইএসআর চকো বিডি', tagline: 'Premium Chocolate, Coffee & Gift Items', logo: '' },
+  brand: { name: 'ESR Choco BD', nameBn: 'ইএসআর চকো বিডি', tagline: 'Premium Chocolate · Coffee · Nuts · Dates · Gifts', logo: '' },
   announcement: { active: false, text: '', link: '' },
   banners: [],
-  contact: { phones: [], whatsapp: '', messengerUsername: '', email: '', address: '', mapUrl: '', hours: '', hoursNote: '' },
-  social: { facebookPageUrl: '', facebookReviewsUrl: '', instagram: '', youtube: '', tiktok: '' },
+  contact: { phones: ['01722-931841'], whatsapp: '8801722931841', messengerUsername: '', email: 'shamimhossain0502@gmail.com', address: '', mapUrl: '', hours: '', hoursNote: '' },
+  social: { facebookPageUrl: 'https://www.facebook.com/esr.choco.bd?mibextid=ZbWKwL', facebookReviewsUrl: '', instagram: '', youtube: '', tiktok: '' },
   shipping: { insideDhaka: 60, outsideDhaka: 120, weightBased: false, baseWeightKg: 2, extraPerKg: 20, freeShippingThreshold: 0, note: '' },
   payment: { cod: { enabled: true }, bkash: { enabled: false }, nagad: { enabled: false }, sslcommerz: { enabled: false } },
   trustBadges: [],

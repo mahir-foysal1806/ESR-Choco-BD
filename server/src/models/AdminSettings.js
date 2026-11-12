@@ -12,7 +12,7 @@ export const DEFAULT_SETTINGS = {
   brand: {
     name: 'ESR Choco BD',
     nameBn: 'ইএসআর চকো বিডি',
-    tagline: 'Premium Chocolate, Coffee & Gift Items — delivered across Bangladesh',
+    tagline: 'Premium Chocolate · Coffee · Nuts · Dates · Gifts',
     logo: '',
   },
   announcement: {
@@ -26,18 +26,18 @@ export const DEFAULT_SETTINGS = {
     { title: 'Naturally Sweet. Simply Delicious.', subtitle: 'Premium dates for everyday snacking, gifting and special moments.', ctaText: 'Shop Dates', ctaLink: '/shop?category=premium-dates', image: '', theme: 'leaf', active: true },
   ],
   contact: {
-    phones: ['01700-000000'],
-    whatsapp: '8801700000000', // international format, no +
-    messengerUsername: 'yourpage', // m.me/<username>
-    email: '',
-    address: 'House 12, Road 5, Mirpur-10, Dhaka-1216, Bangladesh',
-    mapUrl: 'https://maps.google.com/?q=Mirpur+10+Dhaka',
-    hours: 'Saturday – Thursday: 9:00 AM – 9:00 PM',
-    hoursNote: 'Friday: Online orders only',
+    phones: ['01722-931841'],
+    whatsapp: '8801722931841', // international format, no +
+    messengerUsername: '',
+    email: 'shamimhossain0502@gmail.com',
+    address: '',
+    mapUrl: '',
+    hours: '',
+    hoursNote: '',
   },
   social: {
-    facebookPageUrl: 'https://www.facebook.com/yourpage',
-    facebookReviewsUrl: 'https://www.facebook.com/yourpage/reviews',
+    facebookPageUrl: 'https://www.facebook.com/esr.choco.bd?mibextid=ZbWKwL',
+    facebookReviewsUrl: '',
     instagram: '',
     youtube: '',
     tiktok: '',
@@ -70,16 +70,45 @@ export const DEFAULT_SETTINGS = {
     body: 'We bring together delicious chocolates, carefully selected nuts and naturally sweet dates for everyday treats and thoughtful gifts. Every order is packed with care and delivered right to your door.',
   },
   seo: {
-    title: 'ESR Choco BD — Premium Chocolate, Nuts & Dates in Bangladesh',
-    description: 'Shop premium chocolates, almonds, cashews, pistachios and dates online in Bangladesh. Fresh picks, secure ordering and Cash on Delivery.',
+    title: 'ESR Choco BD — Premium Chocolate, Coffee, Nuts & Gifts',
+    description: 'Shop premium chocolates, specialty coffee, nuts, dates and gift boxes online in Bangladesh. Secure ordering and delivery across Bangladesh.',
     ogImage: '',
-    keywords: 'chocolate online Bangladesh, almonds, cashew nuts, dates, premium snacks, dry fruits Bangladesh',
+    keywords: 'chocolate online Bangladesh, coffee, premium nuts, dates, gift boxes, chocolate gifts',
   },
 };
 
 export async function getSettings() {
   const doc = await AdminSettings.findOne({ key: 'main' }).lean();
-  return deepMerge(DEFAULT_SETTINGS, doc?.data || {});
+  const settings = deepMerge(DEFAULT_SETTINGS, doc?.data || {});
+  // Replace only the starter-template placeholders; preserve owner-entered custom values.
+  if (settings.contact?.phones?.some((p) => /01700-000000/.test(String(p)))) settings.contact.phones = ['01722-931841'];
+  if (settings.contact?.whatsapp === '8801700000000') settings.contact.whatsapp = '8801722931841';
+  if (settings.contact?.messengerUsername === 'yourpage') settings.contact.messengerUsername = '';
+  if (settings.contact?.email === 'hello@cocoacrunch.com') settings.contact.email = 'shamimhossain0502@gmail.com';
+  if (String(settings.contact?.address || '').includes('House 12, Road 5, Mirpur-10')) settings.contact.address = '';
+  if (String(settings.contact?.mapUrl || '').includes('Mirpur+10+Dhaka')) settings.contact.mapUrl = '';
+  if (String(settings.social?.facebookPageUrl || '').includes('/yourpage')) settings.social.facebookPageUrl = 'https://www.facebook.com/esr.choco.bd?mibextid=ZbWKwL';
+  if (String(settings.social?.facebookReviewsUrl || '').includes('/yourpage')) settings.social.facebookReviewsUrl = '';
+  if (/farm|agricultur|fresh|mango|honey|Premium Chocolate, Nuts & Dates in Bangladesh/i.test(`${settings.brand?.tagline || ''} ${settings.seo?.title || ''} ${settings.seo?.description || ''}`)) {
+    settings.brand.tagline = 'Premium Chocolate · Coffee · Nuts · Dates · Gifts';
+    settings.seo.title = 'ESR Choco BD — Premium Chocolate, Coffee, Nuts & Gifts';
+    settings.seo.description = 'Shop premium chocolates, specialty coffee, nuts, dates and gift boxes online in Bangladesh. Secure ordering and delivery across Bangladesh.';
+    settings.seo.keywords = 'chocolate online Bangladesh, coffee, premium nuts, dates, gift boxes, chocolate gifts';
+  }
+  if (/farm|agricultur|mango|honey|fresh/i.test(settings.announcement?.text || '')) {
+    settings.announcement = { ...settings.announcement, active: true, text: '🍫 Premium chocolates · ☕ Specialty coffee · 🌰 Premium nuts · 🎁 Thoughtful gifts', link: '/shop' };
+  }
+  if ((settings.trustBadges || []).some((item) => /farm|agricultur|fresh|organic|pure honey/i.test(`${item.title || ''} ${item.text || ''}`))) {
+    settings.trustBadges = DEFAULT_SETTINGS.trustBadges;
+  }
+  const banners = (settings.banners || []).filter((item) =>
+    !/farm|agricultur|mango|honey|fruit|harvest|fresh/i.test(`${item.title || ''} ${item.subtitle || ''}`)
+  );
+  if (banners.length !== (settings.banners || []).length) settings.banners = banners.length ? banners : DEFAULT_SETTINGS.banners;
+  if (/farm|agricultur|mango|honey|fresh/i.test(`${settings.about?.title || ''} ${settings.about?.body || ''}`)) {
+    settings.about = DEFAULT_SETTINGS.about;
+  }
+  return settings;
 }
 
 export async function saveSettings(data) {

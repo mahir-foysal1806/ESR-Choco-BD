@@ -9,7 +9,7 @@ export const adminListCategories = asyncHandler(async (_req, res) => {
 });
 
 export const listCategories = asyncHandler(async (_req, res) => {
-  const cats = await Category.find({ isActive: true }).sort('sortOrder name').lean();
+  const cats = await Category.find({ isActive: true, slug: { $nin: ['pure-honey', 'seasonal-fruits', 'agricultural-products'] } }).sort('sortOrder name').lean();
   res.json(cats);
 });
 

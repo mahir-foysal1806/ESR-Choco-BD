@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   Search, ShoppingCart, Menu, X, Phone, Home, Store, PackageSearch, MapPin, Mail, Clock, Facebook, MessageCircle,
-  Leaf, Truck, ShieldCheck, Banknote, Instagram, Youtube, ExternalLink, MessagesSquare,
+  PackageCheck, Truck, ShieldCheck, Banknote, Instagram, Youtube, ExternalLink,
 } from 'lucide-react';
 import { useSettings } from '../context/SettingsContext';
 import { useCart } from '../context/CartContext';
@@ -59,7 +59,7 @@ function SearchBox({ className = '', onDone }) {
       role="search"
     >
       <Search size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-earth-400" />
-      <input value={q} onChange={(e) => setQ(e.target.value)} className="input !rounded-full !py-2 pl-10" placeholder="Search chocolate, almonds, dates…" aria-label="Search products" />
+      <input value={q} onChange={(e) => setQ(e.target.value)} className="input !rounded-full !py-2 pl-10" placeholder="Search chocolate, coffee, nuts, dates, gifts…" aria-label="Search products" />
     </form>
   );
 }
@@ -124,9 +124,7 @@ function Header() {
             </nav>
             <div className="mt-auto space-y-2 border-t border-earth-100 pt-4">
               {phone && <a href={telHref(phone)} className="btn-primary w-full"><Phone size={16} /> Call {phone}</a>}
-              {settings.social.facebookPageUrl && (
-                <a href={settings.social.facebookPageUrl} target="_blank" rel="noreferrer" className="btn w-full bg-[#1877F2] text-white"><Facebook size={16} /> Our Facebook Page</a>
-              )}
+              {settings.contact.whatsapp && <a href={`https://wa.me/${settings.contact.whatsapp}`} target="_blank" rel="noreferrer" className="btn w-full bg-[#25D366] text-white"><MessageCircle size={16} /> Message us on WhatsApp</a>}
             </div>
           </aside>
         </div>
@@ -135,112 +133,80 @@ function Header() {
   );
 }
 
-const ICONS = { leaf: Leaf, truck: Truck, shield: ShieldCheck, banknote: Banknote };
+const ICONS = { leaf: PackageCheck, package: PackageCheck, truck: Truck, shield: ShieldCheck, banknote: Banknote };
 
 function Footer() {
   const { settings, categories } = useSettings();
-  const { brand, contact, social, trustBadges, about } = settings;
-  const wa = contact.whatsapp && `https://wa.me/${contact.whatsapp}`;
+  const { brand, contact, social, trustBadges } = settings;
+  const wa = contact.whatsapp && `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(`Hello ${brand.name}, I'd like to know more about your products.`)}`;
   return (
-    <footer className="mt-12 bg-earth-900 text-leaf-100">
+    <footer className="mt-16 bg-[#26130f] text-[#eadbd0]">
       <div className="border-b border-white/10">
         <div className="container-x grid grid-cols-2 gap-4 py-6 lg:grid-cols-4">
           {trustBadges.map((t) => {
-            const Icon = ICONS[t.icon] || Leaf;
+            const Icon = ICONS[t.icon] || ShieldCheck;
             return (
               <div key={t.title} className="flex items-start gap-3">
-                <span className="rounded-xl bg-white/10 p-2.5 text-honey-300"><Icon size={20} /></span>
-                <div>
-                  <p className="text-sm font-semibold text-white">{t.title}</p>
-                  <p className="text-xs text-leaf-200">{t.text}</p>
-                </div>
+                <span className="rounded-xl bg-white/10 p-2.5 text-[#d8ad7c]"><Icon size={20} /></span>
+                <div><p className="text-sm font-semibold text-white">{t.title}</p><p className="text-xs text-[#c5ad9c]">{t.text}</p></div>
               </div>
             );
           })}
         </div>
       </div>
 
-      <div className="container-x grid gap-8 py-10 md:grid-cols-2 lg:grid-cols-4">
+      <div className="container-x grid gap-9 py-11 sm:grid-cols-2 lg:grid-cols-[1.4fr_.8fr_1fr_1fr]">
         <div>
-          <img
-  src={brand.logo ? assetUrl(brand.logo) : "/esr-choco-bd-logo.png"}
-  alt="ESR Choco BD"
-  className="h-14 w-auto max-w-[210px] object-contain object-left"
-  width="300"
-  height="200"
-/>
-          {brand.nameBn && <p className="text-sm text-honey-300">{brand.nameBn}</p>}
-          <p className="mt-3 text-sm leading-relaxed text-leaf-200">{about.body}</p>
-          {social.facebookPageUrl && (
-            <a href={social.facebookPageUrl} target="_blank" rel="noreferrer" className="btn mt-4 bg-[#1877F2] text-white hover:bg-[#1465d0]">
-              <Facebook size={16} /> Visit our Facebook Page
-            </a>
-          )}
+          <img src={brand.logo ? assetUrl(brand.logo) : "/esr-choco-bd-logo.png"} alt="ESR Choco BD" className="h-14 w-auto max-w-[210px] object-contain object-left" width="300" height="200" />
+          {brand.nameBn && <p className="mt-2 text-sm text-[#d8ad7c]">{brand.nameBn}</p>}
+          <p className="mt-3 max-w-sm text-sm leading-7 text-[#c5ad9c]">Premium chocolates, specialty coffee, carefully selected nuts, dates and thoughtful gifts for every occasion.</p>
+          {wa && <a href={wa} target="_blank" rel="noreferrer" className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-full bg-[#25D366] px-5 text-sm font-bold text-white transition hover:bg-[#1eae54]"><MessageCircle size={17} /> Chat on WhatsApp</a>}
         </div>
 
         <div>
-          <h3 className="mb-3 font-sans text-sm font-bold uppercase tracking-wider text-honey-300">Shop</h3>
-          <ul className="space-y-2 text-sm">
-            <li><Link to="/shop" className="hover:text-white">All Products</Link></li>
-            {categories.map((c) => (
-              <li key={c._id}><Link to={`/shop?category=${c.slug}`} className="hover:text-white">{c.icon} {c.name}</Link></li>
-            ))}
-            <li><Link to="/track" className="hover:text-white">📦 Track Your Order</Link></li>
+          <h3 className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-[#d8ad7c]">Explore</h3>
+          <ul className="space-y-3 text-sm text-[#e2d1c4]">
+            <li><Link to="/shop" className="hover:text-white">All products</Link></li>
+            {categories.map((c) => <li key={c._id}><Link to={`/shop?category=${c.slug}`} className="hover:text-white">{c.icon} {c.name}</Link></li>)}
+            <li><Link to="/track" className="hover:text-white">Track an order</Link></li>
           </ul>
         </div>
 
         <div className="space-y-3 text-sm">
-          <h3 className="mb-3 font-sans text-sm font-bold uppercase tracking-wider text-honey-300">Contact & Location</h3>
-          {contact.address && (
-            <p className="flex gap-2"><MapPin size={16} className="mt-0.5 shrink-0 text-honey-300" />
-              <span>{contact.address} {contact.mapUrl && <a href={contact.mapUrl} target="_blank" rel="noreferrer" className="ml-1 inline-flex items-center gap-0.5 underline">Map <ExternalLink size={12} /></a>}</span>
-            </p>
-          )}
-          {contact.phones?.map((p) => (
-            <p key={p} className="flex gap-2"><Phone size={16} className="shrink-0 text-honey-300" /><a href={telHref(p)} className="hover:text-white">{p}</a></p>
-          ))}
-          {contact.email && <p className="flex gap-2"><Mail size={16} className="shrink-0 text-honey-300" /><a href={`mailto:${contact.email}`} className="hover:text-white">{contact.email}</a></p>}
-          {wa && <p className="flex gap-2"><MessageCircle size={16} className="shrink-0 text-honey-300" /><a href={wa} target="_blank" rel="noreferrer" className="hover:text-white">WhatsApp us</a></p>}
+          <h3 className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-[#d8ad7c]">Get in touch</h3>
+          {contact.phones?.map((p) => <p key={p} className="flex items-center gap-2"><Phone size={15} className="text-[#d8ad7c]" /><a href={telHref(p)} className="hover:text-white">{p}</a></p>)}
+          {contact.email && <p className="flex items-center gap-2 break-all"><Mail size={15} className="text-[#d8ad7c]" /><a href={`mailto:${contact.email}`} className="hover:text-white">{contact.email}</a></p>}
+          {contact.address && <p className="flex items-start gap-2"><MapPin size={15} className="mt-0.5 text-[#d8ad7c]" /><span>{contact.address} {contact.mapUrl && <a href={contact.mapUrl} target="_blank" rel="noreferrer" className="underline">Map</a>}</span></p>}
+          {social.facebookPageUrl && <a href={social.facebookPageUrl} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-2 text-sm text-[#d8ad7c] hover:text-white"><Facebook size={16} /> Facebook Page</a>}
+          {contact.messengerUsername?.trim() && <a href={`https://m.me/${contact.messengerUsername.trim().replace(/^@/, '')}`} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-2 text-sm text-[#d8ad7c] hover:text-white"><MessageCircle size={16} /> Message on Messenger</a>}
         </div>
 
         <div className="text-sm">
-          <h3 className="mb-3 font-sans text-sm font-bold uppercase tracking-wider text-honey-300">Business Hours</h3>
-          <p className="flex gap-2"><Clock size={16} className="mt-0.5 shrink-0 text-honey-300" /><span>{contact.hours}<br />{contact.hoursNote}</span></p>
-          <p className="mt-4 text-leaf-200">{settings.shipping.note}</p>
+          <h3 className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-[#d8ad7c]">Delivery & payment</h3>
+          {contact.hours && <p className="mb-3 flex gap-2"><Clock size={15} className="mt-0.5 shrink-0 text-[#d8ad7c]" /><span>{contact.hours}{contact.hoursNote ? ` · ${contact.hoursNote}` : ''}</span></p>}
+          <p className="leading-6 text-[#c5ad9c]">{settings.shipping.note || 'Delivery available across Bangladesh.'}</p>
+          <p className="mt-4 text-xs text-[#b49b89]">Cash on Delivery · bKash · Nagad · Online payment options</p>
           <div className="mt-4 flex gap-2">
-            {[[social.facebookPageUrl, Facebook, 'Facebook'], [social.instagram, Instagram, 'Instagram'], [social.youtube, Youtube, 'YouTube']].filter(([u]) => u).map(([u, Icon, n]) => (
-              <a key={n} href={u} target="_blank" rel="noreferrer" aria-label={n} className="rounded-xl bg-white/10 p-2.5 hover:bg-white/20"><Icon size={18} /></a>
-            ))}
+            {[[social.instagram, Instagram, 'Instagram'], [social.youtube, Youtube, 'YouTube']].filter(([u]) => u).map(([u, Icon, n]) => <a key={n} href={u} target="_blank" rel="noreferrer" aria-label={n} className="rounded-xl bg-white/10 p-2.5 hover:bg-white/20"><Icon size={18} /></a>)}
           </div>
-          <p className="mt-4 text-xs text-leaf-300">We accept: Cash on Delivery · bKash · Nagad · Cards</p>
         </div>
       </div>
 
-      <div className="border-t border-white/10 py-4 text-center text-xs text-leaf-300">
-        © {new Date().getFullYear()} {brand.name}. All rights reserved. · Delivering to all 64 districts of Bangladesh 🇧🇩
-      </div>
+      <div className="border-t border-white/10 py-4 text-center text-xs text-[#b49b89]">© {new Date().getFullYear()} {brand.name}. All rights reserved.</div>
     </footer>
   );
 }
 
 function FloatingChat() {
   const { settings } = useSettings();
-  const { contact } = settings;
-  const wa = contact.whatsapp && `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(`Hello ${settings.brand.name}, I'd like to know more about your products.`)}`;
-  const ms = contact.messengerUsername && `https://m.me/${contact.messengerUsername}`;
-  if (!wa && !ms) return null;
+  const { contact, brand } = settings;
+  const wa = contact.whatsapp && `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(`Hello ${brand.name}, I need help with an order.`)}`;
+  if (!wa) return null;
   return (
-    <div className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-3 z-30 flex flex-col gap-2.5 md:bottom-6 md:right-5">
-      {ms && (
-        <a href={ms} target="_blank" rel="noreferrer" aria-label="Chat on Messenger" className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[#00B2FF] to-[#006AFF] text-white shadow-lift transition hover:scale-110">
-          <MessagesSquare size={22} />
-        </a>
-      )}
-      {wa && (
-        <a href={wa} target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp" className="flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lift transition hover:scale-110">
-          <MessageCircle size={24} />
-        </a>
-      )}
+    <div className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-3 z-30 md:bottom-6 md:right-5">
+      <a href={wa} target="_blank" rel="noreferrer" aria-label="Message us on WhatsApp" className="flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_12px_32px_-8px_rgba(37,211,102,.65)] transition hover:scale-105">
+        <MessageCircle size={25} />
+      </a>
     </div>
   );
 }

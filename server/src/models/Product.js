@@ -23,8 +23,8 @@ const productSchema = new Schema(
 
     price: { type: Number, required: true, min: 0 },
     comparePrice: { type: Number, default: 0, min: 0 }, // original price -> discount tag
-    unit: { type: String, default: 'kg' }, // kg, 500g, 1L, dozen, pc
-    weightKg: { type: Number, default: 1, min: 0 }, // used for weight-based shipping
+    unit: { type: String, default: 'pack' }, // kg, 500g, 1L, dozen, pc
+    weightKg: { type: Number, default: 0.15, min: 0 }, // used for weight-based shipping
 
     // ---- Daily inventory controls ----
     stockStatus: { type: String, enum: ['in_stock', 'out_of_stock', 'coming_soon'], default: 'in_stock', index: true },

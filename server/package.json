@@ -1,10 +1,12 @@
 {
-  "name": "khamar-fresh-server",
+  "name": "esr-choco-bd-server",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "main": "src/server.js",
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",

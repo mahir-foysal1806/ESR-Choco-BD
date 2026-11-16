@@ -7,6 +7,7 @@ import {
 import { useSettings } from '../context/SettingsContext';
 import { useCart } from '../context/CartContext';
 import { assetUrl } from '../lib/api';
+import ErrorBoundary from './ErrorBoundary';
 
 const telHref = (n) => `tel:${String(n).replace(/[^\d+]/g, '')}`;
 
@@ -236,7 +237,9 @@ export default function Layout() {
       <AnnouncementBar />
       <Header />
       <main className="min-w-0 flex-1 pb-20 md:pb-0">
-        <Outlet />
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
       </main>
       <Footer />
       <FloatingChat />

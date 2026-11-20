@@ -9,6 +9,7 @@
     text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
     background: #fbf7f2;
+    font-family: Inter, "Noto Sans Bengali", system-ui, sans-serif;
   }
 
   body {

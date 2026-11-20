@@ -10,8 +10,8 @@ export default {
         cream: '#fbf7f2',
       },
       fontFamily: {
-        sans: ['"Hind Siliguri"', 'Inter', 'system-ui', 'sans-serif'],
-        display: ['Fraunces', '"Hind Siliguri"', 'Georgia', 'serif'],
+        sans: ['Inter', '"Noto Sans Bengali"', 'system-ui', 'sans-serif'],
+        display: ['Fraunces', '"Noto Sans Bengali"', 'Georgia', 'serif'],
       },
       boxShadow: {
         soft: '0 4px 20px -6px rgba(65,35,24,.16)',
